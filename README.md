@@ -14,7 +14,7 @@ npm run dev
 ```
 
 The demo of the front end is hosted at 
-**https://digital-circuit.netlify.app**<br>
+**https://littoral-bl.netlify.app**<br>
 The admin section can also be viewed at 
-**https://digital-circuit.netlify.app/admin**
+**https://littoral-bl.netlify.app/admin**
 # lbl-Front-end
