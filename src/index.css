@@ -1,5 +1,14 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
 @import "tailwindcss";
+
+/* This project toggles dark mode by adding a `.dark` class to <html>
+   (see ThemeContext.jsx), but Tailwind v4's dark: variant defaults to
+   the OS-level `prefers-color-scheme` media query instead — completely
+   ignoring that class. This line rewires dark: to follow the .dark
+   class, which is what every dark: utility across the whole codebase
+   (Navbar, TeamsSubNav, About, Tickets, Watch, Schedule, Standings,
+   Teams, ReceiptToast) was actually written expecting. */
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   /* ============================================
@@ -7,22 +16,22 @@
      ============================================ */
   
   /* Background Colors */
-  --color-lbl-cream: #fcf8f2;
-  --color-lbl-cream-dark: #f5efe8;
+  --color-lbl-cream: #f7f4ec;
+  --color-lbl-cream-dark: #ece6d8;
   
   /* Primary Brand Colors */
-  --color-lbl-orange: #d97c2b;
-  --color-lbl-orange-dark: #bf6a1f;
-  --color-lbl-orange-light: #f0ba5f;
+  --color-lbl-orange: #c8871c;
+  --color-lbl-orange-dark: #a06a10;
+  --color-lbl-orange-light: #e7b954;
   
   /* Dark Colors */
-  --color-lbl-dark: #1e1a16;
-  --color-lbl-dark-soft: #2d2822;
+  --color-lbl-dark: #0c1412;
+  --color-lbl-dark-soft: #16211d;
   
   /* Text Colors */
-  --color-lbl-soft: rgba(30, 26, 22, 0.6);
-  --color-lbl-soft-light: rgba(30, 26, 22, 0.45);
-  --color-lbl-soft-lighter: rgba(30, 26, 22, 0.25);
+  --color-lbl-soft: rgba(12, 20, 18, 0.62);
+  --color-lbl-soft-light: rgba(12, 20, 18, 0.45);
+  --color-lbl-soft-lighter: rgba(12, 20, 18, 0.25);
   
   /* White/Overlay Colors */
   --color-lbl-white: #ffffff;
@@ -35,10 +44,10 @@
      ============================================ */
   
   /* Dark Mode Backgrounds */
-  --color-lbl-dark-bg: #12181A;
-  --color-lbl-dark-card: #1A2124;
-  --color-lbl-dark-card-light: #1e282b;
-  --color-lbl-dark-sidebar: #0D1214;
+  --color-lbl-dark-bg: #0a120f;
+  --color-lbl-dark-card: #111d18;
+  --color-lbl-dark-card-light: #16261f;
+  --color-lbl-dark-sidebar: #060d0b;
   --color-lbl-dark-border: rgba(255, 255, 255, 0.05);
   
   /* Dark Mode Text */
@@ -47,7 +56,7 @@
   --color-lbl-dark-text-dim: rgba(237, 239, 238, 0.25);
   
   /* Dark Mode Orange */
-  --color-lbl-dark-orange: #E8A93D;
+  --color-lbl-dark-orange: #e0a526;
   --color-lbl-dark-orange-dark: #f0ba5f;
 
   /* ============================================
@@ -55,7 +64,7 @@
      ============================================ */
   
   /* Success / Confirmed / Published */
-  --color-lbl-success: #3FA66E;
+  --color-lbl-success: #2f9c62;
   --color-lbl-success-bg: rgba(63, 166, 110, 0.12);
   
   /* Warning / Pending / Flagged */
@@ -68,7 +77,7 @@
   --color-lbl-error-dark: #a00d25;
   
   /* Info / Live / Streaming */
-  --color-lbl-info: #2FA8A3;
+  --color-lbl-info: #1f8a8a;
   --color-lbl-info-bg: rgba(47, 168, 163, 0.12);
   
   /* Neutral / Final / Draft */
@@ -80,10 +89,10 @@
      ============================================ */
   
   /* Admin Backgrounds */
-  --color-lbl-admin-bg: #12181A;
-  --color-lbl-admin-card: #1A2124;
-  --color-lbl-admin-card-light: #1e282b;
-  --color-lbl-admin-sidebar: #0D1214;
+  --color-lbl-admin-bg: #0a120f;
+  --color-lbl-admin-card: #111d18;
+  --color-lbl-admin-card-light: #16261f;
+  --color-lbl-admin-sidebar: #060d0b;
   --color-lbl-admin-border: rgba(255, 255, 255, 0.05);
   
   /* Admin Text */
@@ -92,7 +101,7 @@
   --color-lbl-admin-text-dim: rgba(237, 239, 238, 0.25);
   
   /* Admin Inputs */
-  --color-lbl-admin-input: #0D1214;
+  --color-lbl-admin-input: #060d0b;
   --color-lbl-admin-input-border: rgba(255, 255, 255, 0.1);
   --color-lbl-admin-input-focus: rgba(232, 169, 61, 0.4);
 
@@ -101,20 +110,20 @@
      ============================================ */
   
   /* Logo Gradient */
-  --color-lbl-gradient-start: #d97c2b;
-  --color-lbl-gradient-end: #c73b2b;
+  --color-lbl-gradient-start: #e0a526;
+  --color-lbl-gradient-end: #0e4d34;
   
   /* Banner Gradient */
-  --color-lbl-banner-start: #fcf5ec;
-  --color-lbl-banner-end: #f5efe8;
+  --color-lbl-banner-start: #f7f4ec;
+  --color-lbl-banner-end: #e8efe6;
 
   /* ============================================
      BORDER COLORS
      ============================================ */
   
-  --color-lbl-border-light: rgba(30, 26, 22, 0.06);
-  --color-lbl-border-medium: rgba(30, 26, 22, 0.1);
-  --color-lbl-border-orange: rgba(217, 124, 43, 0.3);
+  --color-lbl-border-light: rgba(12, 20, 18, 0.08);
+  --color-lbl-border-medium: rgba(12, 20, 18, 0.12);
+  --color-lbl-border-orange: rgba(200, 135, 28, 0.32);
 
   /* ============================================
      SHADOW COLORS
@@ -128,7 +137,14 @@
      FONTS
      ============================================ */
   
-  --font-bebas: 'Bebas Neue', sans-serif;
+  --font-bebas: 'Archivo Black', 'Bebas Neue', sans-serif;
+  --font-display: 'Archivo Black', sans-serif;
+  --color-lbl-green: #0e4d34;
+  --color-lbl-green-deep: #07301f;
+  --color-lbl-green-soft: #e8efe6;
+  --color-lbl-court: #1f8a8a;
+  --color-lbl-gold: #e0a526;
+  --color-lbl-gold-deep: #b57f10;
   --font-inter: 'Inter', sans-serif;
   --font-jetbrains: 'JetBrains Mono', monospace;
 
@@ -336,6 +352,22 @@
   border-color: rgba(255, 255, 255, 0.025);
 }
 
+/* Added: the new landing page (Clubs grid + News list cards) uses these
+   border tokens, which had no dark-mode override — cards had an
+   almost-invisible border in dark mode. */
+.dark .border-lbl-border-light {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.dark .border-lbl-border-medium {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.dark .border-lbl-border-orange,
+.dark .hover\:border-lbl-border-orange:hover {
+  border-color: rgba(232, 169, 61, 0.35);
+}
+
 /* Shadow overrides */
 .dark .shadow-sm {
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
@@ -474,4 +506,91 @@
   .admin-scroll::-webkit-scrollbar-thumb:hover {
     background: rgba(30, 26, 22, 0.25);
   }
+}
+/* ============================================================
+   LBL 2026 REDESIGN — cursor, motion, scroll systems
+   ============================================================ */
+
+html.lbl-cursor-on,
+html.lbl-cursor-on * { cursor: none !important; }
+
+.lbl-cursor-dot {
+  position: fixed; top: 0; left: 0; z-index: 9999; pointer-events: none;
+  width: 6px; height: 6px; border-radius: 9999px;
+  background: var(--color-lbl-gold);
+  box-shadow: 0 0 12px rgba(224, 165, 38, 0.8);
+}
+.lbl-cursor-ring {
+  position: fixed; top: 0; left: 0; z-index: 9998; pointer-events: none;
+  width: 34px; height: 34px; color: var(--color-lbl-gold);
+  transition: width .22s ease, height .22s ease, opacity .22s ease, color .22s ease;
+  opacity: .85;
+}
+.lbl-cursor-ring.is-active { width: 54px; height: 54px; opacity: 1; color: var(--color-lbl-court); }
+.lbl-cursor-ring.is-down { width: 26px; height: 26px; }
+.lbl-cursor-ring svg { animation: lbl-spin 6s linear infinite; }
+@keyframes lbl-spin { to { transform: rotate(360deg); } }
+
+/* ---------- Loader ---------- */
+.lbl-loader {
+  position: fixed; inset: 0; z-index: 10000;
+  display: grid; place-items: center;
+  background: radial-gradient(circle at 50% 40%, #12261d 0%, #060d0b 70%);
+  transition: opacity .5s ease, visibility .5s ease;
+}
+.lbl-loader.is-out { opacity: 0; visibility: hidden; }
+.lbl-loader-inner { display: flex; flex-direction: column; align-items: center; gap: 1.25rem; padding: 2rem; }
+.lbl-ball { width: 84px; height: 84px; animation: lbl-bounce 1s cubic-bezier(.5,.05,.5,.95) infinite; }
+@keyframes lbl-bounce {
+  0%, 100% { transform: translateY(-22px) rotate(0deg); }
+  50% { transform: translateY(8px) scale(1.05, .95) rotate(180deg); }
+}
+.lbl-loader-meta { text-align: center; display: flex; flex-direction: column; gap: .35rem; }
+.lbl-loader-title { font-family: var(--font-display); font-size: .85rem; letter-spacing: .22em; color: #f7f4ec; }
+.lbl-loader-stage { font-family: var(--font-jetbrains); font-size: .7rem; letter-spacing: .16em; text-transform: uppercase; color: var(--color-lbl-gold); }
+.lbl-loader-bar { width: 220px; height: 3px; border-radius: 999px; background: rgba(247,244,236,.14); overflow: hidden; }
+.lbl-loader-bar span { display: block; height: 100%; background: linear-gradient(90deg, var(--color-lbl-court), var(--color-lbl-gold)); transition: width .18s ease; }
+.lbl-loader-pct { font-family: var(--font-jetbrains); font-size: .7rem; color: rgba(247,244,236,.5); }
+
+/* ---------- Scroll reveals ---------- */
+.lbl-reveal { opacity: 0; transition: opacity .8s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1); will-change: transform, opacity; }
+.lbl-from-up    { transform: translate3d(0, 46px, 0); }
+.lbl-from-down  { transform: translate3d(0, -34px, 0); }
+.lbl-from-left  { transform: translate3d(-64px, 0, 0); }
+.lbl-from-right { transform: translate3d(64px, 0, 0); }
+.lbl-from-zoom  { transform: scale(.92); }
+.lbl-from-blur  { transform: translate3d(0, 24px, 0); filter: blur(10px); }
+.lbl-reveal.is-in { opacity: 1; transform: none; filter: none; }
+
+/* ---------- Marquee ---------- */
+.lbl-marquee { display: flex; width: max-content; animation: lbl-marquee 34s linear infinite; }
+.lbl-marquee:hover { animation-play-state: paused; }
+@keyframes lbl-marquee { to { transform: translateX(-50%); } }
+
+/* ---------- Card stack (sticky) ---------- */
+.lbl-stack-item { position: sticky; top: 96px; }
+
+/* ---------- Media ---------- */
+.lbl-media { overflow: hidden; }
+.lbl-media img { transition: transform 1.2s cubic-bezier(.16,1,.3,1), filter .6s ease; }
+.lbl-media:hover img { transform: scale(1.06); }
+
+.lbl-grain::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .5;
+  background-image: radial-gradient(rgba(255,255,255,.055) 1px, transparent 1px);
+  background-size: 3px 3px;
+}
+
+.lbl-wordmark {
+  font-family: var(--font-display);
+  line-height: .82;
+  letter-spacing: -.03em;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lbl-reveal { opacity: 1 !important; transform: none !important; filter: none !important; }
+  .lbl-marquee { animation: none; }
+  .lbl-ball, .lbl-cursor-ring svg { animation: none; }
+  .lbl-stack-item { position: static; }
 }
