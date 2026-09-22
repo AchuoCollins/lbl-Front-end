@@ -11,25 +11,31 @@ import Teams from './pages/league/Teams'
 // Remove Standings and Stats imports
 import Schedule from './pages/league/Schedule'
 import Support from './pages/Support'
+import CustomCursor from './components/CustomCursor'
+import LoadingScreen from './components/LoadingScreen'
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<LBLLanding />} />
-      <Route path="/admin" element={<AdminDashboard />} />
-      
-      <Route element={<LeagueLayout />}>
-        <Route path="/teams" element={<Teams />} />
-        {/* Remove standalone Standings and Stats routes */}
-        <Route path="/schedule" element={<Schedule />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/news" element={<News />} />
-        <Route path="/watch" element={<Watch />} />
-        <Route path="/tickets" element={<Tickets />} />
-        <Route path="/donate" element={<Donate />} />
-        <Route path="/support" element={<Support />} />
-      </Route>
-    </Routes>
+    <>
+      <LoadingScreen />
+      <CustomCursor />
+      <Routes>
+        <Route path="/" element={<LBLLanding />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+
+        <Route element={<LeagueLayout />}>
+          <Route path="/teams" element={<Teams />} />
+          {/* Remove standalone Standings and Stats routes */}
+          <Route path="/schedule" element={<Schedule />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/news" element={<News />} />
+          <Route path="/watch" element={<Watch />} />
+          <Route path="/tickets" element={<Tickets />} />
+          <Route path="/donate" element={<Donate />} />
+          <Route path="/support" element={<Support />} />
+        </Route>
+      </Routes>
+    </>
   )
 }
 
