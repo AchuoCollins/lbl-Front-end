@@ -1,429 +1,597 @@
 import React from "react";
-import { Heart, ChevronRight, Video, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useAppContext } from '../context/AppContext';
+import {
+  ArrowRight,
+  ArrowUpRight,
+  CalendarDays,
+  ChevronRight,
+  Clock3,
+  Heart,
+  MapPin,
+  Play,
+  Shield,
+  Ticket,
+  Trophy,
+  Users,
+} from "lucide-react";
+import { useAppContext } from "../context/AppContext";
 import Navbar from "../components/Navbar";
-import { useTheme } from "../context/ThemeContext";
+import Reveal, { CountUp } from "../components/Reveal";
+import StackSection from "../components/landing/StackSection";
+import ClockSection from "../components/landing/ClockSection";
+import SiteFooter from "../components/SiteFooter";
 
-// Tide Divider Component
-const TideDivider = ({ flip = false }) => (
-  <div className={`w-full overflow-hidden leading-none ${flip ? "rotate-180" : ""}`} aria-hidden="true">
-    <svg viewBox="0 0 1200 40" preserveAspectRatio="none" className="w-full h-8">
-      <path
-        d="M0,20 C150,40 300,0 450,20 C600,40 750,0 900,20 C1050,40 1150,0 1200,20 L1200,40 L0,40 Z"
-        fill="#d97c2b"
-        opacity="0.08"
-      />
-      <path
-        d="M0,26 C150,44 300,8 450,26 C600,44 750,8 900,26 C1050,44 1150,8 1200,26"
-        fill="none"
-        stroke="#d97c2b"
-        strokeWidth="1.5"
-        opacity="0.25"
-      />
-    </svg>
-  </div>
-);
+/* ------------------------------------------------------------------ */
+/* Ticker                                                              */
+/* ------------------------------------------------------------------ */
+const DEFAULT_TICKER = [
+  { label: "SEASON", text: "Ligue Régionale de Basketball du Littoral — 2025/2026 campaign" },
+  { label: "VENUE", text: "Matchdays at Collège De La Salle, Douala" },
+  { label: "DIVISIONS", text: "Men · Women · Youth across the Littoral region" },
+  { label: "STREAM", text: "Selected games broadcast live — follow the league channels" },
+];
 
-// Ticker Component
-const Ticker = ({ announcements }) => {
-  const defaultItems = [
-    { label: "LAUNCH", text: "LBL Inaugural Season — Kickoff announcement coming soon" },
-    { label: "REGION", text: "7 founding clubs across the Littoral confirmed" },
-    { label: "TEAMS", text: "Douala • Edéa • Nkongsamba • Loum • Manjo • Yabassi • Dibombari" },
-    { label: "STREAM", text: "All league games to be streamed live on YouTube" },
-    { label: "NEWS", text: "Follow along as the league builds toward tip-off" },
-  ];
-
-  const tickerData = announcements && announcements.length > 0 
-    ? announcements.map(a => ({ label: "📢", text: a.text }))
-    : defaultItems;
+function Ticker({ announcements }) {
+  const items =
+    announcements && announcements.length > 0
+      ? announcements.map((a) => ({ label: "LEAGUE", text: a.text }))
+      : DEFAULT_TICKER;
+  const loop = [...items, ...items];
 
   return (
-    <div className="bg-lbl-dark border-b border-white/5 overflow-hidden whitespace-nowrap dark:bg-[#0D1214] dark:border-white/5">
-      <div className="flex ticker-track w-max">
-        {[...tickerData, ...tickerData].map((t, i) => (
-          <div key={i} className="flex items-center gap-2 px-6 py-2 text-xs font-jetbrains shrink-0">
-            <span className="text-lbl-orange font-bold dark:text-[#E8A93D]">{t.label}</span>
-            <span className="text-lbl-cream/75 dark:text-white/70">{t.text}</span>
-            <span className="text-white/15 mx-2 dark:text-white/10">•</span>
+    <div className="bg-lbl-green-deep border-b border-lbl-cream/10 overflow-hidden">
+      <div className="lbl-marquee">
+        {loop.map((t, i) => (
+          <div key={i} className="flex items-center gap-3 px-6 py-2.5 text-[11px] font-jetbrains shrink-0">
+            <span className="text-lbl-gold font-bold tracking-[0.18em]">{t.label}</span>
+            <span className="text-lbl-cream/70 tracking-wide">{t.text}</span>
+            <span className="text-lbl-cream/20">/</span>
           </div>
         ))}
       </div>
     </div>
   );
-};
+}
 
-export default function LBLLanding() {
-  const { teams, news, announcements, standings } = useAppContext();
-  const { darkMode } = useTheme();
+/* ------------------------------------------------------------------ */
+/* Hero                                                                */
+/* ------------------------------------------------------------------ */
+const PILLARS = [
+  {
+    icon: Trophy,
+    title: "Regional competition",
+    body: "Officiated men's, women's and youth divisions played across the Littoral.",
+    to: "/schedule",
+    cta: "See fixtures",
+  },
+  {
+    icon: Users,
+    title: "Clubs & players",
+    body: "Rosters, records and the clubs that make up the coastal basketball map.",
+    to: "/teams",
+    cta: "Meet the clubs",
+  },
+  {
+    icon: Play,
+    title: "Watch the league",
+    body: "Streams and highlights so no performance on this coast goes unseen.",
+    to: "/watch",
+    cta: "Start watching",
+  },
+  {
+    icon: Heart,
+    title: "Back the league",
+    body: "Partners and supporters fund courts, officials, kit and youth programmes.",
+    to: "/donate",
+    cta: "Support LBL",
+  },
+];
 
-  // Get published news
-  const publishedNews = news.filter(n => n.status === "PUBLISHED");
-  const featuredNews = publishedNews.find(n => n.featured) || publishedNews[0];
-  const newsMinor = publishedNews.filter(n => !n.featured).slice(0, 3);
-
-  // Get teams for display
-  const displayTeams = teams.map(t => ({
-    city: t.name,
-    note: t.department || t.city || "",
-    logo: t.logo || null,
-  }));
-
-  // Fallback data if no teams in context
-  const fallbackTeams = [
-    { city: "Douala", note: "Economic capital of the Littoral, largest city" },
-    { city: "Edéa", note: "Sanaga River region" },
-    { city: "Nkongsamba", note: "Menoua–Mungo corridor" },
-    { city: "Loum", note: "Moungo department" },
-    { city: "Manjo", note: "Moungo department" },
-    { city: "Yabassi", note: "Nkam department" },
-    { city: "Dibombari", note: "Wouri department" },
-  ];
-
-  const clubsToShow = displayTeams.length > 0 ? displayTeams : fallbackTeams;
-  const totalTeams = standings.length > 0 ? standings.length : teams.length;
-
+function Hero() {
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      darkMode 
-        ? 'bg-[#12181A] text-[#EDEFEE]' 
-        : 'bg-lbl-cream text-lbl-dark'
-    } font-inter`}>
-      <style>{`
-        @keyframes ticker-scroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .ticker-track { 
-          animation: ticker-scroll 38s linear infinite; 
-        }
-        .ticker-track:hover { 
-          animation-play-state: paused; 
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .ticker-track { animation: none; }
-        }
-      `}</style>
+    <section className="relative bg-lbl-dark text-lbl-cream overflow-hidden lbl-grain">
+      <div className="absolute inset-0">
+        <img src="/media/hero-1.jpg" alt="" className="w-full h-full object-cover object-center opacity-45" />
+        <div className="absolute inset-0 bg-gradient-to-b from-lbl-dark/85 via-lbl-dark/60 to-lbl-dark" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_25%,rgba(224,165,38,0.22),transparent_60%)]" />
+      </div>
 
-      {/* Navbar */}
-      <Navbar />
+      <div className="relative max-w-7xl mx-auto px-6 md:px-10 pt-20 pb-14 md:pt-28 md:pb-20">
+        <Reveal from="down" className="flex items-center justify-center gap-3">
+          <span className="w-2 h-2 rounded-full bg-lbl-gold animate-pulse" />
+          <span className="font-jetbrains text-[10px] md:text-[11px] tracking-[0.3em] uppercase text-lbl-cream/70">
+            Douala · Littoral · Cameroon
+          </span>
+        </Reveal>
 
-      {/* Main content - Add top padding to account for fixed navbar */}
-      <div className="pt-16">
-        {/* Ticker */}
-        <Ticker announcements={announcements} />
+        <Reveal from="zoom" delay={80}>
+          <h1 className="mt-7 lbl-wordmark text-center text-[10vw] sm:text-[11vw] md:text-[11.5vw] whitespace-nowrap leading-[0.82] text-lbl-cream drop-shadow-[0_18px_40px_rgba(0,0,0,0.5)]">
+            LITTORAL
+            <br />
+            <span className="text-lbl-gold">BASKETBALL</span>
+            <br />
+            LEAGUE
+          </h1>
+        </Reveal>
 
-        {/* Hero Section */}
-        <section className="px-5 pt-6 pb-16 md:pt-10 md:pb-24">
-          <div className="max-w-6xl mx-auto">
-            <div className={`flex items-center gap-2 text-xs font-jetbrains mb-4 ${
-              darkMode ? 'text-[#E8A93D]' : 'text-lbl-orange'
-            }`}>
-              <span className={`w-1.5 h-1.5 rounded-full ${
-                darkMode ? 'bg-[#E8A93D]' : 'bg-lbl-orange'
-              }`} />
-              A NEW LEAGUE FOR THE LITTORAL
-            </div>
-            <h1 className={`font-bebas text-[15vw] leading-[0.85] md:text-[7.5rem] tracking-wide max-w-4xl ${
-              darkMode ? 'text-white' : 'text-lbl-dark'
-            }`}>
-              COASTAL BASKETBALL.
-              <br />
-              <span className={darkMode ? 'text-[#E8A93D]' : 'text-lbl-orange'}>BUILT FROM HOME.</span>
-            </h1>
-            <p className={`max-w-xl mt-6 text-base md:text-lg ${
-              darkMode ? 'text-white/60' : 'text-lbl-soft'
-            }`}>
-              The Littoral Basketball League is launching with {totalTeams} founding clubs across
-              the region — built for fans, players, and communities from Douala to
-              Yabassi, with plans to grow beyond the Littoral over time.
+        <div className="mt-10 grid gap-6 md:grid-cols-[1.1fr_auto] md:items-end">
+          <Reveal from="left" delay={140}>
+            <p className="max-w-xl text-base md:text-lg leading-relaxed text-lbl-cream/75">
+              The regional league of the Littoral, affiliated to FECABASK. One calendar, one table,
+              one champion — carrying Douala's basketball culture from the neighbourhood court to the
+              national stage.
             </p>
-            <div className="flex flex-wrap gap-4 mt-8">
-              <Link
-                to="/watch"
-                className={`flex items-center gap-2 font-semibold px-6 py-3 rounded-full transition-colors ${
-                  darkMode 
-                    ? 'bg-[#E8A93D] text-[#12181A] hover:bg-[#f0ba5f]' 
-                    : 'bg-lbl-orange text-white hover:bg-lbl-orange-dark'
-                }`}
-              >
-                <Video size={18} /> Follow on YouTube
-              </Link>
-              <Link
-                to="/teams"
-                className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-medium transition-colors border ${
-                  darkMode 
-                    ? 'border-white/30 text-white/70 hover:border-[#E8A93D] hover:text-[#E8A93D]' 
-                    : 'border-lbl-soft hover:border-lbl-orange'
-                }`}
-              >
-                Meet the Founding Clubs <ChevronRight size={16} />
-              </Link>
-            </div>
-          </div>
-        </section>
+          </Reveal>
+          <Reveal from="right" delay={200} className="flex flex-wrap gap-3">
+            <Link
+              to="/schedule"
+              className="inline-flex items-center gap-2 rounded-full bg-lbl-gold px-6 py-3 text-sm font-bold text-lbl-dark hover:bg-lbl-orange-light transition-colors"
+            >
+              Matchday schedule <ArrowRight size={16} strokeWidth={2.4} />
+            </Link>
+            <Link
+              to="/about"
+              className="inline-flex items-center gap-2 rounded-full border border-lbl-cream/25 px-6 py-3 text-sm font-semibold text-lbl-cream hover:border-lbl-gold hover:text-lbl-gold transition-colors"
+            >
+              What is LBL? <ChevronRight size={16} strokeWidth={2.4} />
+            </Link>
+          </Reveal>
+        </div>
 
-        <TideDivider />
-
-        {/* Why Section */}
-        <section className="px-5 py-14">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid md:grid-cols-2 gap-10 items-start">
-              <div>
-                <h2 className={`font-bebas text-4xl tracking-wide mb-4 ${
-                  darkMode ? 'text-white' : 'text-lbl-dark'
-                }`}>
-                  WHY THE LITTORAL, WHY NOW
-                </h2>
-                <p className={`text-sm leading-relaxed mb-4 ${
-                  darkMode ? 'text-white/60' : 'text-lbl-soft'
-                }`}>
-                  Cameroon has already proven it produces elite basketball talent —
-                  Joel Embiid and Pascal Siakam, both born in Cameroon, have gone on
-                  to NBA All-Star careers. The Littoral region, anchored by Douala,
-                  is home to some of the country's deepest basketball communities.
-                </p>
-                <p className={`text-sm leading-relaxed ${
-                  darkMode ? 'text-white/60' : 'text-lbl-soft'
-                }`}>
-                  The Littoral Basketball League is being built to give that talent
-                  and that community a structured, well-run home league — with
-                  honest local coverage, live-streamed games, and a direct way for
-                  fans to support the clubs and players who make it happen.
-                </p>
-              </div>
-              <div className={`rounded-2xl border p-6 shadow-sm ${
-                darkMode 
-                  ? 'bg-[#1A2124] border-white/10' 
-                  : 'bg-white border-lbl-soft/10'
-              }`}>
-                <h3 className={`font-bebas text-xl tracking-wide mb-4 ${
-                  darkMode ? 'text-[#E8A93D]' : 'text-lbl-orange'
-                }`}>
-                  FOUNDING CLUBS
-                </h3>
-                <div className="space-y-3">
-                  {clubsToShow.map((c) => (
-                    <div key={c.city} className="flex items-center gap-3 text-sm">
-                      {c.logo ? (
-                        <img src={c.logo} alt={c.city} className="w-6 h-6 rounded-full object-cover" />
-                      ) : (
-                        <MapPin size={16} className={`${
-                          darkMode ? 'text-[#E8A93D]' : 'text-lbl-orange'
-                        } mt-0.5 shrink-0`} />
-                      )}
-                      <div>
-                        <span className={darkMode ? 'text-white/80' : 'font-medium'}>{c.city}</span>
-                        <span className={darkMode ? 'text-white/40' : 'text-lbl-soft-light'}> — {c.note}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <TideDivider flip />
-
-        {/* News Section */}
-        <section className="px-5 py-14">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className={`font-bebas text-4xl tracking-wide ${
-                darkMode ? 'text-white' : 'text-lbl-dark'
-              }`}>
-                LATEST UPDATES
-              </h2>
-              <Link to="/news" className={`text-sm font-medium hover:underline ${
-                darkMode ? 'text-[#E8A93D]' : 'text-lbl-orange'
-              }`}>
-                All updates →
-              </Link>
-            </div>
-            <div className="grid md:grid-cols-2 gap-6">
-              {featuredNews ? (
-                <Link to="/news" className={`group block rounded-2xl border p-6 transition-colors shadow-sm ${
-                  darkMode 
-                    ? 'bg-[#1A2124] border-white/10 hover:border-[#E8A93D]/30' 
-                    : 'bg-white border-lbl-soft/10 hover:border-lbl-orange'
-                }`}>
-                  <span className={`text-xs font-jetbrains font-bold ${darkMode ? 'text-[#e8594a]' : 'text-[#c73b2b]'}`}>{featuredNews.tag}</span>
-                  <h3 className={`font-bebas text-3xl mt-3 mb-3 leading-snug transition-colors ${
-                    darkMode 
-                      ? 'text-white group-hover:text-[#E8A93D]' 
-                      : 'text-lbl-dark group-hover:text-lbl-orange'
-                  }`}>
-                    {featuredNews.title}
-                  </h3>
-                  <p className={`text-sm leading-relaxed mb-3 line-clamp-3 ${
-                    darkMode ? 'text-white/60' : 'text-lbl-soft'
-                  }`}>
-                    {featuredNews.excerpt}
-                  </p>
-                  <span className={`text-xs ${darkMode ? 'text-white/40' : 'text-lbl-soft-light'}`}>
-                    {featuredNews.date}
+        {/* Four cards at the foot of the hero */}
+        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {PILLARS.map((p, i) => {
+            const Icon = p.icon;
+            return (
+              <Reveal key={p.title} from={i % 2 === 0 ? "up" : "blur"} delay={120 + i * 90}>
+                <Link
+                  to={p.to}
+                  className="group block h-full rounded-2xl bg-lbl-cream text-lbl-dark p-6 hover:-translate-y-1.5 transition-transform duration-500 shadow-[0_24px_60px_-40px_rgba(0,0,0,0.9)]"
+                >
+                  <Icon size={24} strokeWidth={1.6} className="text-lbl-green" />
+                  <h3 className="mt-5 font-bebas text-2xl leading-none">{p.title}</h3>
+                  <p className="mt-3 text-sm leading-relaxed text-lbl-soft">{p.body}</p>
+                  <span className="mt-5 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-lbl-green group-hover:gap-3 transition-all">
+                    {p.cta} <ArrowUpRight size={14} strokeWidth={2.4} />
                   </span>
                 </Link>
+              </Reveal>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Match centre                                                        */
+/* ------------------------------------------------------------------ */
+function formatDate(value) {
+  if (!value) return null;
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" });
+}
+
+function MatchCenter({ games, standings }) {
+  const upcoming = (games || [])
+    .filter((g) => g.status !== "final" && g.status !== "completed")
+    .slice(0, 3);
+  const results = (games || [])
+    .filter((g) => g.status === "final" || g.status === "completed")
+    .slice(0, 3);
+  const table = (standings || []).slice(0, 5);
+
+  return (
+    <section className="relative bg-lbl-cream py-24 md:py-32">
+      <div className="max-w-7xl mx-auto px-6 md:px-10">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+          <div>
+            <Reveal from="left">
+              <span className="font-jetbrains text-[11px] tracking-[0.24em] uppercase text-lbl-court">
+                Match centre
+              </span>
+            </Reveal>
+            <Reveal from="up" delay={90}>
+              <h2 className="mt-4 font-bebas text-4xl md:text-6xl leading-[0.95] text-lbl-dark">
+                This week on the coast
+              </h2>
+            </Reveal>
+          </div>
+          <Reveal from="right" delay={120}>
+            <Link
+              to="/schedule"
+              className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.14em] text-lbl-green hover:gap-3 transition-all"
+            >
+              Full schedule <ArrowUpRight size={16} strokeWidth={2.4} />
+            </Link>
+          </Reveal>
+        </div>
+
+        <div className="mt-12 grid gap-6 lg:grid-cols-12">
+          {/* Next fixtures */}
+          <Reveal from="left" className="lg:col-span-5">
+            <div className="h-full rounded-3xl bg-lbl-dark text-lbl-cream p-7 md:p-9">
+              <div className="flex items-center gap-2 text-lbl-gold">
+                <CalendarDays size={18} strokeWidth={1.8} />
+                <span className="font-jetbrains text-[11px] tracking-[0.22em] uppercase">Next up</span>
+              </div>
+              {upcoming.length > 0 ? (
+                <ul className="mt-7 space-y-5">
+                  {upcoming.map((g) => (
+                    <li key={g.id} className="border-b border-lbl-cream/10 pb-5 last:border-0">
+                      <div className="flex items-baseline justify-between gap-4">
+                        <span className="font-bebas text-2xl leading-none">
+                          {g.homeTeam || g.home_team || "TBD"} <span className="text-lbl-cream/35">vs</span>{" "}
+                          {g.awayTeam || g.away_team || "TBD"}
+                        </span>
+                        <span className="font-jetbrains text-xs text-lbl-gold">
+                          {formatDate(g.date) || "Date TBC"}
+                        </span>
+                      </div>
+                      <div className="mt-2 flex items-center gap-4 text-xs text-lbl-cream/55">
+                        <span className="inline-flex items-center gap-1.5">
+                          <Clock3 size={13} strokeWidth={1.8} /> {g.time || "Time TBC"}
+                        </span>
+                        <span className="inline-flex items-center gap-1.5">
+                          <MapPin size={13} strokeWidth={1.8} /> {g.venue || "Venue TBC"}
+                        </span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
               ) : (
-                <div className={`rounded-2xl border p-6 shadow-sm flex items-center justify-center ${
-                  darkMode ? 'bg-[#1A2124] border-white/10 text-white/40' : 'bg-white border-lbl-soft/10 text-lbl-soft-light'
-                }`}>
-                  <p>No featured news available</p>
-                </div>
+                <EmptyNote
+                  dark
+                  text="The next matchday is being confirmed. Fixtures appear here the moment the league office publishes them."
+                />
               )}
-              <div className="space-y-4">
-                {newsMinor.length > 0 ? (
-                  newsMinor.map((n) => (
-                    <Link
-                      key={n.title}
-                      to="/news"
-                      className={`group block rounded-2xl border p-5 transition-colors shadow-sm ${
-                        darkMode 
-                          ? 'bg-[#1A2124] border-white/10 hover:border-[#E8A93D]/30' 
-                          : 'bg-white border-lbl-soft/10 hover:border-lbl-orange'
-                      }`}
+              <Link
+                to="/tickets"
+                className="mt-8 inline-flex items-center gap-2 rounded-full bg-lbl-gold px-5 py-2.5 text-xs font-bold uppercase tracking-[0.14em] text-lbl-dark hover:bg-lbl-orange-light transition-colors"
+              >
+                <Ticket size={15} strokeWidth={2.2} /> Get tickets
+              </Link>
+            </div>
+          </Reveal>
+
+          {/* Feature image */}
+          <Reveal from="zoom" delay={90} className="lg:col-span-3">
+            <div className="lbl-media relative h-full min-h-[260px] rounded-3xl overflow-hidden">
+              <img src="/media/shot-spotlight.jpg" alt="" className="absolute inset-0 w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-lbl-dark/85 to-transparent" />
+              <div className="absolute bottom-6 left-6 right-6">
+                <span className="font-jetbrains text-[10px] tracking-[0.22em] uppercase text-lbl-gold">
+                  Home floor
+                </span>
+                <p className="mt-2 font-bebas text-2xl leading-none text-lbl-cream">
+                  Collège De La Salle, Douala
+                </p>
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Standings snapshot */}
+          <Reveal from="right" delay={140} className="lg:col-span-4">
+            <div className="h-full rounded-3xl border border-lbl-border-light bg-white p-7 md:p-9">
+              <div className="flex items-center gap-2 text-lbl-green">
+                <Shield size={18} strokeWidth={1.8} />
+                <span className="font-jetbrains text-[11px] tracking-[0.22em] uppercase">Standings</span>
+              </div>
+              {table.length > 0 ? (
+                <ul className="mt-7 space-y-3">
+                  {table.map((row, i) => (
+                    <li
+                      key={row.id || row.team || i}
+                      className="flex items-center gap-4 rounded-xl px-3 py-2.5 odd:bg-lbl-cream-dark/60"
                     >
-                      <span className={`text-xs font-jetbrains font-bold ${
-                        darkMode ? 'text-[#E8A93D]' : 'text-lbl-orange'
-                      }`}>
-                        {n.tag}
+                      <span className="font-jetbrains text-xs text-lbl-soft-light w-5">
+                        {String(i + 1).padStart(2, "0")}
                       </span>
-                      <h4 className={`font-semibold mt-2 mb-1 transition-colors line-clamp-1 ${
-                        darkMode 
-                          ? 'text-white/80 group-hover:text-[#E8A93D]' 
-                          : 'text-lbl-dark group-hover:text-lbl-orange'
-                      }`}>
-                        {n.title}
-                      </h4>
-                      <span className={`text-xs ${darkMode ? 'text-white/40' : 'text-lbl-soft-light'}`}>
-                        {n.date}
+                      <span className="flex-1 font-semibold text-sm text-lbl-dark truncate">
+                        {row.team || row.name || row.teamName || "—"}
                       </span>
-                    </Link>
-                  ))
+                      <span className="font-jetbrains text-xs text-lbl-soft">
+                        {(row.wins ?? 0)}W · {(row.losses ?? 0)}L
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <EmptyNote text="The table opens once the first officiated results are homologated." />
+              )}
+              {/* Latest results */}
+              <div className="mt-8 border-t border-lbl-border-light pt-6">
+                <span className="font-jetbrains text-[11px] tracking-[0.22em] uppercase text-lbl-court">
+                  Latest results
+                </span>
+                {results.length > 0 ? (
+                  <ul className="mt-4 space-y-3">
+                    {results.map((g) => (
+                      <li key={g.id} className="flex items-center justify-between text-sm">
+                        <span className="text-lbl-dark truncate">
+                          {g.homeTeam || g.home_team} v {g.awayTeam || g.away_team}
+                        </span>
+                        <span className="font-jetbrains text-xs font-bold text-lbl-green">
+                          {g.homeScore ?? g.home_score ?? 0}–{g.awayScore ?? g.away_score ?? 0}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
                 ) : (
-                  <div className={`rounded-2xl border p-5 shadow-sm text-center ${
-                    darkMode ? 'bg-[#1A2124] border-white/10 text-white/40' : 'bg-white border-lbl-soft/10 text-lbl-soft-light'
-                  }`}>
-                    <p>No news available</p>
-                  </div>
+                  <p className="mt-3 text-sm text-lbl-soft-light">No final scores published yet.</p>
                 )}
               </div>
             </div>
-          </div>
-        </section>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
 
-        {/* Donate Banner */}
-        <section className="px-5 pb-14">
-          <div className="max-w-6xl mx-auto">
-            <div className={`rounded-2xl p-8 md:p-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-sm border ${
-              darkMode 
-                ? 'bg-gradient-to-br from-[#1A2124] to-[#12181A] border-[#E8A93D]/20' 
-                : 'bg-gradient-to-br from-[#fcf5ec] to-[#f5efe8] border-lbl-orange/30'
-            }`}>
-              <div>
-                <h3 className={`font-bebas text-3xl tracking-wide mb-2 ${
-                  darkMode ? 'text-white' : 'text-lbl-dark'
-                }`}>
-                  HELP BUILD THE LEAGUE
-                </h3>
-                <p className={`max-w-md text-sm ${
-                  darkMode ? 'text-white/60' : 'text-lbl-soft'
-                }`}>
-                  Early support goes directly toward getting founding clubs
-                  equipped, venues secured, and the inaugural season off the
-                  ground.
-                </p>
-              </div>
-              <Link
-                to="/donate"
-                className={`flex items-center gap-2 font-semibold px-6 py-3 rounded-full transition-colors whitespace-nowrap ${
-                  darkMode 
-                    ? 'bg-[#E8A93D] text-[#12181A] hover:bg-[#f0ba5f]' 
-                    : 'bg-lbl-orange text-white hover:bg-lbl-orange-dark'
-                }`}
-              >
-                <Heart size={18} /> Donate Now
-              </Link>
-            </div>
-          </div>
-        </section>
+function EmptyNote({ text, dark = false }) {
+  return (
+    <p
+      className={`mt-7 rounded-2xl border border-dashed p-5 text-sm leading-relaxed ${
+        dark ? "border-lbl-cream/15 text-lbl-cream/55" : "border-lbl-border-medium text-lbl-soft"
+      }`}
+    >
+      {text}
+    </p>
+  );
+}
 
-        {/* Clubs Grid */}
-        <section className="px-5 pb-16">
-          <div className="max-w-6xl mx-auto">
-            <h2 className={`font-bebas text-4xl tracking-wide mb-6 ${
-              darkMode ? 'text-white' : 'text-lbl-dark'
-            }`}>
-              FOUNDING CLUBS
+/* ------------------------------------------------------------------ */
+/* League at a glance                                                  */
+/* ------------------------------------------------------------------ */
+function Glance({ teams }) {
+  const stats = [
+    { to: teams?.length || 8, suffix: "", label: "Clubs registered" },
+    { to: 3, suffix: "", label: "Divisions: men, women, youth" },
+    { to: 1, suffix: "", label: "Regional title on the line" },
+    { to: 100, suffix: "%", label: "Results officiated & homologated" },
+  ];
+
+  return (
+    <section className="relative bg-lbl-green text-lbl-cream py-24 md:py-32 lbl-grain overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 md:px-10 grid gap-14 lg:grid-cols-2 lg:items-center">
+        <div>
+          <Reveal from="left">
+            <span className="font-jetbrains text-[11px] tracking-[0.24em] uppercase text-lbl-gold">
+              What is the LBL?
+            </span>
+          </Reveal>
+          <Reveal from="up" delay={80}>
+            <h2 className="mt-4 font-bebas text-4xl md:text-6xl leading-[0.95]">
+              The Littoral's basketball, finally under one roof
             </h2>
-            <div className="grid grid-cols-4 md:grid-cols-7 gap-3">
-              {clubsToShow.map((c) => (
+          </Reveal>
+          <Reveal from="up" delay={140}>
+            <p className="mt-6 text-lbl-cream/75 leading-relaxed max-w-xl">
+              The Ligue Régionale de Basketball du Littoral organises competitive basketball for the
+              clubs of Douala and the wider Littoral region under FECABASK. It runs the calendar,
+              appoints officials, validates every result and publishes the standings — so a season
+              here means the same thing it means anywhere the game is taken seriously.
+            </p>
+          </Reveal>
+          <Reveal from="up" delay={200}>
+            <Link
+              to="/about"
+              className="mt-8 inline-flex items-center gap-2 rounded-full border border-lbl-cream/25 px-6 py-3 text-sm font-semibold hover:border-lbl-gold hover:text-lbl-gold transition-colors"
+            >
+              Read the league story <ArrowUpRight size={16} strokeWidth={2.2} />
+            </Link>
+          </Reveal>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          {stats.map((s, i) => (
+            <Reveal key={s.label} from={i % 2 === 0 ? "right" : "zoom"} delay={i * 110}>
+              <div className="rounded-2xl border border-lbl-cream/15 bg-lbl-green-deep/50 p-6 h-full">
+                <div className="font-bebas text-5xl md:text-6xl leading-none text-lbl-gold">
+                  <CountUp to={s.to} suffix={s.suffix} />
+                </div>
+                <p className="mt-3 text-sm text-lbl-cream/65 leading-snug">{s.label}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Clubs                                                               */
+/* ------------------------------------------------------------------ */
+function Clubs({ teams }) {
+  const list = (teams || []).slice(0, 8);
+  const photos = [
+    "/media/team-1.jpg",
+    "/media/team-2.jpg",
+    "/media/squad-1.jpg",
+    "/media/women-1.jpg",
+    "/media/action-4.jpg",
+    "/media/court-1.jpg",
+    "/media/officials.jpg",
+    "/media/celebrate.jpg",
+  ];
+
+  return (
+    <section className="bg-lbl-cream py-24 md:py-32">
+      <div className="max-w-7xl mx-auto px-6 md:px-10">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
+          <div>
+            <Reveal from="left">
+              <span className="font-jetbrains text-[11px] tracking-[0.24em] uppercase text-lbl-court">
+                The clubs
+              </span>
+            </Reveal>
+            <Reveal from="up" delay={80}>
+              <h2 className="mt-4 font-bebas text-4xl md:text-6xl leading-[0.95] text-lbl-dark">
+                Who plays in the league
+              </h2>
+            </Reveal>
+          </div>
+          <Reveal from="right" delay={120}>
+            <Link
+              to="/teams"
+              className="inline-flex items-center gap-2 text-sm font-bold uppercase tracking-[0.14em] text-lbl-green hover:gap-3 transition-all"
+            >
+              All clubs <ArrowUpRight size={16} strokeWidth={2.4} />
+            </Link>
+          </Reveal>
+        </div>
+
+        {list.length > 0 ? (
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {list.map((team, i) => (
+              <Reveal key={team.id || team.name} from={i % 3 === 0 ? "left" : i % 3 === 1 ? "up" : "right"} delay={i * 70}>
                 <Link
-                  key={c.city}
                   to="/teams"
-                  className={`aspect-square rounded-2xl border flex flex-col items-center justify-center text-center transition-colors shadow-sm p-2 ${
-                    darkMode 
-                      ? 'bg-[#1A2124] border-white/10 hover:border-[#E8A93D]/30 hover:text-[#E8A93D]' 
-                      : 'bg-white border-lbl-soft/10 hover:border-lbl-orange hover:text-lbl-orange'
-                  }`}
+                  className="group block rounded-2xl overflow-hidden bg-white border border-lbl-border-light hover:-translate-y-1.5 transition-transform duration-500"
                 >
-                  {c.logo ? (
-                    <img src={c.logo} alt={c.city} className="w-8 h-8 rounded-full object-cover mb-1" />
-                  ) : null}
-                  <span className={`font-bebas text-sm tracking-wide ${
-                    darkMode ? 'text-white/80' : 'text-lbl-dark'
-                  }`}>
-                    {c.city}
-                  </span>
+                  <div className="lbl-media relative aspect-[4/3]">
+                    <img
+                      src={photos[i % photos.length]}
+                      alt=""
+                      loading="lazy"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-lbl-dark/70 to-transparent" />
+                    {team.logo ? (
+                      <img
+                        src={team.logo}
+                        alt=""
+                        className="absolute top-4 left-4 w-10 h-10 rounded-full object-cover border border-lbl-cream/40"
+                      />
+                    ) : null}
+                  </div>
+                  <div className="p-5">
+                    <h3 className="font-bebas text-2xl leading-none text-lbl-dark capitalize">
+                      {team.name || "Club"}
+                    </h3>
+                    <p className="mt-2 text-xs text-lbl-soft">
+                      {team.city ? team.city : "Littoral region"}
+                    </p>
+                  </div>
                 </Link>
+              </Reveal>
+            ))}
+          </div>
+        ) : (
+          <Reveal from="up">
+            <EmptyNote text="Club profiles are published here as each roster is registered for the season." />
+          </Reveal>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* News + partnership                                                  */
+/* ------------------------------------------------------------------ */
+function NewsAndCta({ news }) {
+  const list = (news || []).slice(0, 3);
+  return (
+    <section className="bg-lbl-cream-dark py-24 md:py-32">
+      <div className="max-w-7xl mx-auto px-6 md:px-10 grid gap-12 lg:grid-cols-[1.4fr_1fr]">
+        <div>
+          <Reveal from="left">
+            <span className="font-jetbrains text-[11px] tracking-[0.24em] uppercase text-lbl-court">
+              Newsroom
+            </span>
+          </Reveal>
+          <Reveal from="up" delay={80}>
+            <h2 className="mt-4 font-bebas text-4xl md:text-5xl leading-[0.95] text-lbl-dark">
+              Latest from the league
+            </h2>
+          </Reveal>
+
+          {list.length > 0 ? (
+            <div className="mt-10 space-y-4">
+              {list.map((item, i) => (
+                <Reveal key={item.id || i} from={i % 2 === 0 ? "left" : "right"} delay={i * 90}>
+                  <Link
+                    to="/news"
+                    className="group flex items-center gap-5 rounded-2xl bg-white border border-lbl-border-light p-5 hover:border-lbl-border-orange transition-colors"
+                  >
+                    <span className="font-jetbrains text-xs text-lbl-soft-light">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="flex-1">
+                      <span className="block font-semibold text-lbl-dark">{item.title}</span>
+                      <span className="block mt-1 text-sm text-lbl-soft line-clamp-2">
+                        {item.excerpt || item.summary || item.body}
+                      </span>
+                    </span>
+                    <ArrowUpRight
+                      size={18}
+                      className="text-lbl-green shrink-0 group-hover:rotate-45 transition-transform"
+                      strokeWidth={2}
+                    />
+                  </Link>
+                </Reveal>
               ))}
             </div>
-          </div>
-        </section>
+          ) : (
+            <Reveal from="up">
+              <EmptyNote text="League announcements, match reports and club news will appear here." />
+            </Reveal>
+          )}
+        </div>
 
-        {/* Footer */}
-        <footer className={`border-t ${
-          darkMode ? 'border-white/10 bg-[#0D1214]' : 'border-lbl-soft/10 bg-white/60'
-        }`}>
-          <div className="max-w-6xl mx-auto px-5 py-10 flex flex-col md:flex-row justify-between gap-6 text-sm">
-            <div>
-              <div className={`font-bebas text-2xl tracking-wide mb-1 ${
-                darkMode ? 'text-white' : 'text-lbl-dark'
-              }`}>
-                LBL
+        <Reveal from="right" delay={120}>
+          <div className="relative h-full min-h-[340px] rounded-3xl overflow-hidden text-lbl-cream">
+            <img src="/media/action-4.jpg" alt="" className="absolute inset-0 w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-lbl-green-deep/80" />
+            <div className="relative p-8 md:p-10 flex flex-col justify-between h-full">
+              <Heart size={26} strokeWidth={1.6} className="text-lbl-gold" />
+              <div>
+                <h3 className="font-bebas text-3xl md:text-4xl leading-[0.98]">
+                  Put your name on the coast's biggest court
+                </h3>
+                <p className="mt-4 text-sm text-lbl-cream/70 leading-relaxed">
+                  Sponsorship and donations pay for officials, equipment, venues and youth programmes
+                  across the Littoral.
+                </p>
+                <Link
+                  to="/donate"
+                  className="mt-7 inline-flex items-center gap-2 rounded-full bg-lbl-gold px-6 py-3 text-sm font-bold text-lbl-dark hover:bg-lbl-orange-light transition-colors"
+                >
+                  Partner with LBL <ArrowRight size={16} strokeWidth={2.4} />
+                </Link>
               </div>
-              <p className={darkMode ? 'text-white/40' : 'text-lbl-soft-light'}>
-                Littoral Basketball League — Building toward an inaugural season
-              </p>
-            </div>
-            <div className={`flex gap-6 flex-wrap ${
-              darkMode ? 'text-white/40' : 'text-lbl-soft-light'
-            }`}>
-              <Link to="/about" className={`transition-colors ${
-                darkMode ? 'hover:text-white' : 'hover:text-lbl-dark'
-              }`}>
-                About
-              </Link>
-              <Link to="/news" className={`transition-colors ${
-                darkMode ? 'hover:text-white' : 'hover:text-lbl-dark'
-              }`}>
-                News
-              </Link>
-              <Link to="/watch" className={`transition-colors ${
-                darkMode ? 'hover:text-white' : 'hover:text-lbl-dark'
-              }`}>
-                Watch
-              </Link>
-              <Link to="/tickets" className={`transition-colors ${
-                darkMode ? 'hover:text-white' : 'hover:text-lbl-dark'
-              }`}>
-                Tickets
-              </Link>
             </div>
           </div>
-        </footer>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Page                                                                */
+/* ------------------------------------------------------------------ */
+export default function LBLLanding() {
+  const { teams, news, announcements, standings, games } = useAppContext();
+
+  return (
+    <div className="min-h-screen bg-lbl-cream font-inter text-lbl-dark">
+      <Navbar />
+      <div className="pt-16">
+        <Ticker announcements={announcements} />
+        <Hero />
+        <MatchCenter games={games} standings={standings} />
+        <StackSection />
+        <ClockSection />
+        <Glance teams={teams} />
+        <Clubs teams={teams} />
+        <NewsAndCta news={news} />
+        <SiteFooter />
       </div>
     </div>
   );
