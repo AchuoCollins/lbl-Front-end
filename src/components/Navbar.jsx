@@ -61,9 +61,7 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-5 flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-lbl-orange to-[#c73b2b] dark:from-lbl-dark-orange dark:to-[#C8102E] flex items-center justify-center font-bebas text-white dark:text-[#12181A] text-sm">
-              L
-            </div>
+            <img src="/media/logo.png" alt="Littoral Basketball League" className="w-9 h-9 object-contain" />
             <span className="font-bebas tracking-wider text-xl text-gray-900 dark:text-white">LBL</span>
           </Link>
 
@@ -174,9 +172,7 @@ export default function Navbar() {
             darkMode ? 'border-white/10' : 'border-gray-200'
           }`}>
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-lbl-orange to-[#c73b2b] dark:from-lbl-dark-orange dark:to-[#C8102E] flex items-center justify-center font-bebas text-white dark:text-[#12181A] text-sm">
-                L
-              </div>
+              <img src="/media/logo.png" alt="Littoral Basketball League" className="w-9 h-9 object-contain" />
               <span className={`font-bebas tracking-wider text-xl ${darkMode ? 'text-white' : 'text-gray-900'}`}>LBL</span>
             </div>
             <button 
